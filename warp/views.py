@@ -56,6 +56,7 @@ def get_arguments():
 
 @app.route("/stop")
 def stop():
+    os.kill(app.module_process.pid, signal.SIGCONT)
     app.module_process.terminate()
     return "OK"
 

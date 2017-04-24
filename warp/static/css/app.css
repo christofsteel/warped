@@ -9,6 +9,20 @@
     height: 100vh;
 }
 
+ul {
+    padding: 0px;
+    margin: 0px;
+}
+
+#arguments {
+    padding: 0px;
+}
+
+.tabs-panel {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
 #output .out {
     color: #FFFFFF;
 }

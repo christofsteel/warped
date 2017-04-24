@@ -146,7 +146,7 @@ function createAction(action) {
             var help = $("<button/>").attr("type", "button").addClass("button disabled secondary").text("?").appendTo(helpdiv);
         }
         if(action.optional === true) {
-            li.prop('disabled', true);
+            li.prop('disabled', true).addClass('disabled');
             input.prop('disabled', true).addClass('disabled');
             input.find('input').prop('disabled', true).addClass('disabled');
             input.find('.addbutton').prop('disabled', true).addClass('disabled');
@@ -156,12 +156,12 @@ function createAction(action) {
                 thisli = $('#action-' + action['uuid']);
                 if(thisli.prop('disabled')) {
                     console.log('tock');
-                    thisli.prop('disabled', false);
+                    thisli.prop('disabled', false).removeClass('disabled');
                     $("#action-" + action['uuid'] + " input").prop('disabled', false).removeClass("disabled");
                     $("#action-" + action['uuid'] + " .addbutton").removeClass('disabled').prop('disabled', false);
                     $("#action-" + action['uuid'] + " .rembutton").removeClass('disabled').prop('disabled', false);
                 } else {
-                    thisli.prop('disabled', true);
+                    thisli.prop('disabled', true).addClass('disabled');
                     $("#action-" + action['uuid'] + " input").prop('disabled', true).addClass('disabled');
                     $("#action-" + action['uuid'] + " .addbutton").addClass('disabled').prop('disabled', true);
                     $("#action-" + action['uuid'] + " .rembutton").addClass('disabled').prop('disabled', true);
@@ -226,16 +226,16 @@ function printErr(data){
 
 function resumeProcess() {
     $("#resumeButton").css('display', 'none');
-    $("#sendButton").css('display', 'inline-block');
-    $("#pauseButton").removeClass("disabled").prop('disabled', false);
+    //$("#sendButton").css('display', 'inline-block');
+    $("#pauseButton").css('display', 'inline-block');//removeClass("disabled").prop('disabled', false);
     $.get({url: '/resume'});
     printErr("Process resumed")
 }
 
 function pauseProcess() {
-    $("#sendButton").css('display', 'none');
+    //$("#sendButton").css('display', 'none');
     $("#resumeButton").css('display', 'inline-block');
-    $("#pauseButton").addClass("disabled").prop('disabled', true);
+    $("#pauseButton").css('display', 'none');//addClass("disabled").prop('disabled', true);
     $.get({url: '/pause'});
     printErr("Process paused")
 }
@@ -258,15 +258,18 @@ function reloadProcess() {
 }
 
 function stopProcess() {
+    $("#sendButton").css('display', 'inline-block').prop('disabled', true).addClass('disabled');
+    $("#pauseButton").css('display', 'none');
+    $("#resumeButton").css('display', 'none');
     $("#stopButton").addClass("disabled").prop('disabled', true);//css('display', 'none');
     $("#reloadButton").removeClass("disabled").prop('disabled', false);//css('display', 'inline-block');
     $.get({url: '/stop'});
 }
 
 function sendData() {
-    $("#sendButton").addClass("disabled").prop('disabled', true);
+    $("#sendButton").css('display', 'none');//addClass("disabled").prop('disabled', true);
     $("#stopButton").removeClass("disabled").prop('disabled', false);//css('display', 'inline-block');
-    $("#pauseButton").removeClass("disabled").prop('disabled', false);//css('display', 'inline-block');
+    $("#pauseButton").css('display', 'inline-block').removeClass("disabled").prop('disabled', false);//css('display', 'inline-block');
     console.log(calcParams());
     $.post({
         url: '/arguments', 
