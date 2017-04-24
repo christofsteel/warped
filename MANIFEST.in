@@ -1,0 +1,2 @@
+recursive-include warp/templates *
+recursive-include warp/static *

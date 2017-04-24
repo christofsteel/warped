@@ -1,0 +1,14 @@
+TODOS:
+    - Handling optional, const and default parameters
+    - Custom actions
+    - Multiple actions, single destination
+
+    - Probably lots of edge cases
+
+    - Filter for stdout stderr
+
+    - unit tests
+
+    - documentation
+
+    - Maybe JS-Framework (?)
