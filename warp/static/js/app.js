@@ -131,9 +131,9 @@ function createAction(action) {
         var inputdiv = $("<div/>").addClass("columns small-5").appendTo(row)
         var deldiv = $("<div/>").addClass("columns small-2").appendTo(row);
         if(action['is_const']) {
-            createCheckboxAction(action).addClass("float-right").appendTo(inputdiv);
+            var input = createCheckboxAction(action).addClass("float-right").appendTo(inputdiv);
         } else {
-            createInputAction(action).addClass("float-right").appendTo(inputdiv);
+            var input = createInputAction(action).addClass("float-right").appendTo(inputdiv);
         }
         if(action.desc !== null) {
             var help = $("<button/>", {"type": "button", "data-open": 'modal_' + action['uuid']})
@@ -146,6 +146,11 @@ function createAction(action) {
             var help = $("<button/>").attr("type", "button").addClass("button disabled secondary").text("?").appendTo(helpdiv);
         }
         if(action.optional === true) {
+            li.prop('disabled', true);
+            input.prop('disabled', true).addClass('disabled');
+            input.find('input').prop('disabled', true).addClass('disabled');
+            input.find('.addbutton').prop('disabled', true).addClass('disabled');
+            input.find('.rembutton').prop('disabled', true).addClass('disabled');
             var del = $("<button/>").attr("type", "button").addClass("button delbutton alert").html("&times;").appendTo(deldiv);
             del.click(function() {
                 thisli = $('#action-' + action['uuid']);
