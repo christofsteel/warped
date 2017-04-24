@@ -2,7 +2,7 @@
 
 ## Install
 
-    pip install https://git.k-fortytwo.de/christofsteel/warp/
+    pip install git+https://git.k-fortytwo.de/christofsteel/warp/
 
 
 ## Usage
