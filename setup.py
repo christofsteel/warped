@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='warp',
     version='0.0.1',
-    packages=['warp'],
+    packages=find_packages(),
     url='https://git.k-fortytwo.de/christofsteel/warp',
     license='MIT',
     author='Christoph Stahl',
