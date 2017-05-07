@@ -117,19 +117,47 @@ function createInputAction(action) {
     }
 }
 
+function disableAction(action) {
+    return function () {
+        console.log("disable");
+        thisli = $('#action-' + action['uuid']);
+        thisli.prop('disabled', true).addClass('disabled');
+        delbutton = $('#action-' + action['uuid' + "button"]);
+        delbutton.prop('disabled', true).addClass('disabled');
+        $("#action-" + action['uuid'] + " .unlock-button").css('width', "100%");
+        $("#action-" + action['uuid'] + " input").prop('disabled', true).addClass('disabled');
+        $("#action-" + action['uuid'] + " .addbutton").addClass('disabled').prop('disabled', true);
+        $("#action-" + action['uuid'] + " .rembutton").addClass('disabled').prop('disabled', true);
+    };
+}
+
+function enableAction(action) {
+    return function() {
+        console.log("enable");
+        thisli = $('#action-' + action['uuid']);
+        thisli.prop('disabled', false).removeClass('disabled');
+        delbutton = $('#action-' + action['uuid' + "button"]);
+        delbutton.prop('disabled', false).removeClass('disabled');
+        $("#action-" + action['uuid'] + " .unlock-button").css('width', 0);
+        $("#action-" + action['uuid'] + " input").prop('disabled', false).removeClass("disabled");
+        $("#action-" + action['uuid'] + " .addbutton").removeClass('disabled').prop('disabled', false);
+        $("#action-" + action['uuid'] + " .rembutton").removeClass('disabled').prop('disabled', false);
+    };
+}
+
 function createAction(action) {
     if('choices' in action) {
         return createSubparserAction(action)
     } else {
         var li = $("<li/>",{'id': 'action-' + action['uuid']}).addClass("action");
         var row = $("<div/>").addClass("row").appendTo(li);
-        var helpdiv = $("<div/>").addClass("columns small-2").appendTo(row);
         var labeldiv = $("<div/>").addClass("columns small-3").appendTo(row);
         var label = $("<label/>", {for: action['uuid']}).addClass("middle").appendTo(labeldiv);
         var header = $("<b/>").text(action["dest"].toUpperCase()).appendTo(label);
 
         var inputdiv = $("<div/>").addClass("columns small-5").appendTo(row)
         var deldiv = $("<div/>").addClass("columns small-2").appendTo(row);
+        var helpdiv = $("<div/>").addClass("columns small-2").appendTo(row);
         if(action['is_const']) {
             var input = createCheckboxAction(action).addClass("float-right").appendTo(inputdiv);
         } else {
@@ -152,21 +180,9 @@ function createAction(action) {
             input.find('.addbutton').prop('disabled', true).addClass('disabled');
             input.find('.rembutton').prop('disabled', true).addClass('disabled');
             var del = $("<button/>").attr("type", "button").addClass("button delbutton alert").html("&times;").appendTo(deldiv);
-            del.click(function() {
-                thisli = $('#action-' + action['uuid']);
-                if(thisli.prop('disabled')) {
-                    console.log('tock');
-                    thisli.prop('disabled', false).removeClass('disabled');
-                    $("#action-" + action['uuid'] + " input").prop('disabled', false).removeClass("disabled");
-                    $("#action-" + action['uuid'] + " .addbutton").removeClass('disabled').prop('disabled', false);
-                    $("#action-" + action['uuid'] + " .rembutton").removeClass('disabled').prop('disabled', false);
-                } else {
-                    thisli.prop('disabled', true).addClass('disabled');
-                    $("#action-" + action['uuid'] + " input").prop('disabled', true).addClass('disabled');
-                    $("#action-" + action['uuid'] + " .addbutton").addClass('disabled').prop('disabled', true);
-                    $("#action-" + action['uuid'] + " .rembutton").addClass('disabled').prop('disabled', true);
-                }
-            })
+            var unlock_button = $("<div/>").addClass('unlock-button').appendTo(li);
+            unlock_button.click(enableAction(action));
+            del.click(disableAction(action));
         } else {
             var del = $("<button/>").attr("type", "button").addClass("button disabled alert").html("&times;").appendTo(deldiv);
         }
