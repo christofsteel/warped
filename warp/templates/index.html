@@ -24,15 +24,16 @@
                         <button type="button" style="display: none;" class="button secondary" id="resumeButton" onclick="resumeProcess()"> <i class="fi-play"></i> </button>
                         <button type="button" class="button alert disabled" disabled id="stopButton" onclick="stopProcess()"> <i class="fi-stop"></i> </button>
                         <button type="button" class="button disabled" disabled id="reloadButton" onclick="reloadProcess()"> <i class="fi-refresh"></i> </button>
+                        <button type="button" class="button" onclick="window.open('/download')"> <i class="fi-download"></i> </button>
                     </div>
                     </div>
                 </div>
             </div>
-            <div class="columns large-3 medium-4 small-12" id="arguments">
+            <div class="columns large-3 medium-5 small-12" id="arguments">
                 <ul id="actions" class="vertical menu">
                 </ul>
             </div>
-            <div class="columns large-9 medium-8 small-12" id="output_wrap">
+            <div class="columns large-9 medium-7 small-12" id="output_wrap">
             <div id="output"></div>
             </div>
         </div>

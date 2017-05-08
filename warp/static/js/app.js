@@ -1,5 +1,5 @@
 function createSubparserAction(action) {
-    var column = $("<li/>").addClass("action");//.addClass("column small-12 medium-12")
+    var column = $("<li/>").addClass("action subparser");//.addClass("column small-12 medium-12")
     //var card = $("<div/>").addClass("card action").appendTo(column);
     var label = $("<label/>", {for: action['uuid']}).appendTo(column);
     var center = $("<center/>").appendTo(label);

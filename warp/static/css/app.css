@@ -18,6 +18,11 @@ li.action{
     position: relative;
 }
 
+li.subparser {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
 #arguments {
     padding: 0px;
 }
@@ -54,7 +59,7 @@ html, body {
 }
 
 li.action {
-    padding: 1rem 1rem 1rem 1rem;
+    padding: 1rem 0;
 }
 
 .unlock-button {

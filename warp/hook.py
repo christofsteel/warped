@@ -4,6 +4,7 @@ import argparse
 
 from threading import Thread, Event
 from multiprocessing import Queue
+from os import fdopen, path
 
 from . import argparser_wrapper
 from . import views
@@ -31,7 +32,6 @@ class QueuedOut(io.StringIO):
             self.seek(0)
             self.truncate(0)
 
-
 class FlaskThread(Thread):
     def __init__(self, port, host):
         super().__init__()
@@ -41,15 +41,29 @@ class FlaskThread(Thread):
     def run(self):
         views.app.run(port=self.port, threaded=True, host=self.host)
 
+class Output():
+    def __init__(self, queue, restart):
+        self._queue = queue
+        self._restart = restart
+        self.cache = []
+
+    def get_output(self):
+        def gen_output():
+            while not self._restart.is_set():
+                msg_type, line = self._queue.get()
+                self.cache.append((msg_type, line))
+                yield (msg_type, line)
+        return gen_output()
 
 def start_module(name, is_module):
     views.app.restart.clear()
-    views.app.name = ""
+    views.app.name = path.basename(name)
     views.app.desc = ""
     views.app.actions = []
     views.app.queue = Queue()
     ioout = QueuedOut("out", views.app.queue)
     ioerr = QueuedOut("err", views.app.queue)
+    views.app.output = Output(views.app.queue, views.app.restart)
 
     views.app.actionQueue = Queue()  # This holds only one Argparser Object
     views.app.namespaceQueue = Queue()  # This hold only one Namespace Object
@@ -65,6 +79,10 @@ def start_module(name, is_module):
         is_module = is_module
     )
     views.app.module_process.start()
+    views.app.mutex_groups, views.app.actions, name, views.app.desc = views.app.actionQueue.get()
+    if name:
+        app.name = name
+
     views.app.module_process.join()
 
     ioerr.write("Process stopped ({})\n".format(views.app.module_process.exitcode))

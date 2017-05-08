@@ -3,7 +3,10 @@ import signal
 import os
 import json
 import argparse
-from flask import Flask, render_template, request, Response, jsonify
+from datetime import datetime
+
+from flask import Flask, render_template, request, Response, \
+    jsonify, send_file, make_response
 
 # Initialize global variables
 app = Flask(__name__)
@@ -30,10 +33,8 @@ def parse_argument(name, json, action):
 def fill_namespace():
     json = dict(request.form)
     namespace = argparse.Namespace()
-    if app.actions == []:
-        if not app.actionQueue.empty():
-            app.mutex_groups, app.actions, app.name, app.desc = app.actionQueue.get()
     all_actions = app.actions
+
     for group in app.mutex_groups:
         all_actions.extend(group.actions)
 
@@ -47,9 +48,6 @@ def fill_namespace():
 
 @app.route("/arguments", methods=['GET'])
 def get_arguments():
-    if app.actions == []:
-        if not app.actionQueue.empty():
-            app.mutex_groups, app.actions, app.name, app.desc = app.actionQueue.get()
     return jsonify({'actions': [a.as_dict() for a in app.actions],
                     'groups': [g.as_dict() for g in app.mutex_groups]})
 
@@ -77,16 +75,32 @@ def reload():
     app.restart.set()
     return "OK"
 
+@app.route("/download", methods=['GET'])
+def download():
+    output = "\n".join([line for msg_type, line in app.output.cache])
+    response = make_response(output)
+    response.headers["Content-Disposition"] = \
+        "attachment; filename=%s_%s.log" \
+        % (app.name, datetime.now().strftime('%Y%m%d-%H%M%S'))
+    return response
+
+
 @app.route("/output.json", methods=['GET'])
 def output():
     def generate():
         yield '{"output":['
-        while not app.restart.is_set():
-            msg_type, line = app.queue.get()
+        cache = app.output.cache
+        for msg_type, line in cache:
+            yield json.dumps({'type' : msg_type, 'line': line})
+            yield ','
+
+        output = app.output.get_output()
+        for msg_type, line in output:
             print("Send ({}): {} (length: {})".format(msg_type, line, len(line)), file=sys.__stdout__)
             yield json.dumps({'type' : msg_type, 'line': line})
             yield ','
         yield '\{\}]}'
+
     return Response(generate(), mimetype="application/json")
 
 
