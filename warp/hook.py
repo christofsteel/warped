@@ -81,7 +81,7 @@ def start_module(name, is_module):
     views.app.module_process.start()
     views.app.mutex_groups, views.app.actions, name, views.app.desc = views.app.actionQueue.get()
     if name:
-        app.name = name
+        views.app.name = name
 
     views.app.module_process.join()
 
