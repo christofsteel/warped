@@ -151,12 +151,14 @@ function createAction(action) {
     } else {
         var li = $("<li/>",{'id': 'action-' + action['uuid']}).addClass("action");
         var row = $("<div/>").addClass("row").appendTo(li);
+
         var labeldiv = $("<div/>").addClass("columns small-3").appendTo(row);
         var label = $("<label/>", {for: action['uuid']}).addClass("middle").appendTo(labeldiv);
         var header = $("<b/>").text(action["dest"].toUpperCase()).appendTo(label);
 
-        var inputdiv = $("<div/>").addClass("columns small-5").appendTo(row)
+        var inputdiv = $("<div/>").addClass("columns small-5").appendTo(row);
         var deldiv = $("<div/>").addClass("columns small-2").appendTo(row);
+        var unlock_button = $("<div/>").addClass('unlock-button').appendTo(row);
         var helpdiv = $("<div/>").addClass("columns small-2").appendTo(row);
         if(action['is_const']) {
             var input = createCheckboxAction(action).addClass("float-right").appendTo(inputdiv);
@@ -165,10 +167,13 @@ function createAction(action) {
         }
         if(action.desc !== null) {
             var help = $("<button/>", {"type": "button", "data-open": 'modal_' + action['uuid']})
-                .addClass("button helpbutton secondary")
+                .addClass("button helpbutton")
                 .text("?").appendTo(helpdiv);
             var modal = $("<div/>", {'id': 'modal_' + action['uuid'], "data-reveal":'reveal'})
                 .addClass('reveal').appendTo(helpdiv);
+            close_button = $('<button/>').addClass("close-button").attr('data-close', '').attr('type', 'button').html("&times;").appendTo(modal);
+
+            var head = $("<h2/>").text(action['dest']).appendTo(modal);
             var text = $("<span/>").text(action['desc']).appendTo(modal);
         } else {
             var help = $("<button/>").attr("type", "button").addClass("button disabled secondary").text("?").appendTo(helpdiv);
@@ -179,8 +184,8 @@ function createAction(action) {
             input.find('input').prop('disabled', true).addClass('disabled');
             input.find('.addbutton').prop('disabled', true).addClass('disabled');
             input.find('.rembutton').prop('disabled', true).addClass('disabled');
+            unlock_button.css('width', '100%')
             var del = $("<button/>").attr("type", "button").addClass("button delbutton alert").html("&times;").appendTo(deldiv);
-            var unlock_button = $("<div/>").addClass('unlock-button').appendTo(li);
             unlock_button.click(enableAction(action));
             del.click(disableAction(action));
         } else {
