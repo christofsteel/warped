@@ -24,7 +24,7 @@ def parse_argument(name, json, action):
             return action.type_function(argument)
     except (KeyError, ValueError):
         if name.endswith("[]"):
-            return None
+            return action.on_none
         else:
             return parse_argument(name + "[]", json, action)
 
