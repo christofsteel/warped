@@ -3,7 +3,7 @@
 `warp` can be used to execute single Python file and Python modules. It captures
 calls to the `argparse` module of Python and renders a web GUI based on the
 options and arguments defined. It also displays the output of the program inside
-the web GUI and allows you to stop, pause and resume the Program, as well as
+the web GUI and allows you to stop, pause and resume the program, as well as
 downloading the output.
 
 ## Install
