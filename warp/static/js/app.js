@@ -228,6 +228,8 @@ window.onload = function() {
     oboe('/output.json').node('output.*', function(e){
         if(e.type === "err") {
             printErr(e.line);
+        } else if (e.type === "sig") {
+            signal(e.line)
         } else {
             printOut(e.line);
         }
@@ -245,58 +247,100 @@ function printErr(data){
     $("#output").scrollTop($("#output")[0].scrollHeight);
 }
 
+function signal(type) {
+    console.log(type);
+    if(type === "pause") {
+        pauseCallback();
+    } else if(type === "resume") {
+        resumeCallback();
+    } else if(type === "reload") {
+        reloadCallback();
+    } else if(type === "stop") {
+        stopCallback();
+    } else if(type === "start") {
+        startCallback();
+    } else if(type === "clear") {
+        clearCallback();
+    }
+}
+
 function resumeProcess() {
+    $.get({url: '/resume'});
+}
+
+function resumeCallback() {
     $("#resumeButton").css('display', 'none');
     //$("#sendButton").css('display', 'inline-block');
     $("#pauseButton").css('display', 'inline-block');//removeClass("disabled").prop('disabled', false);
-    $.get({url: '/resume'});
     printErr("Process resumed")
 }
 
 function pauseProcess() {
     //$("#sendButton").css('display', 'none');
+    $.get({url: '/pause'});
+}
+
+function pauseCallback() {
     $("#resumeButton").css('display', 'inline-block');
     $("#pauseButton").css('display', 'none');//addClass("disabled").prop('disabled', true);
-    $.get({url: '/pause'});
     printErr("Process paused")
 }
 
 function reloadProcess() {
+    $.get({url: '/reload'});
+}
+
+function reloadCallback() {
     $("#sendButton").removeClass("disabled").prop('disabled', false);
     $("#stopButton").addClass("disabled").prop('disabled', true);//css('display', 'inline-block');
     $("#pauseButton").addClass("disabled").prop('disabled', true);//css('display', 'inline-block');
     $("#reloadButton").addClass("disabled").prop('disabled', true);//css('display', 'inline-block');
-    $.get({url: '/reload',
-        success: function() {
-            oboe('/output.json').node('output.*', function(e){
-                if(e.type === "err") {
-                    printErr(e.line);
-                } else {
-                    printOut(e.line);
-                }
-            });
-    }});
+    oboe('/output.json').node('output.*', function(e){
+        if(e.type === "err") {
+            printErr(e.line);
+        } else if (e.type === "sig") {
+            signal(e.line)
+        } else {
+            printOut(e.line);
+        }
+    });
 }
 
 function stopProcess() {
+    $.get({url: '/stop'});
+}
+
+function stopCallback() {
     $("#sendButton").css('display', 'inline-block').prop('disabled', true).addClass('disabled');
     $("#pauseButton").css('display', 'none');
     $("#resumeButton").css('display', 'none');
     $("#stopButton").addClass("disabled").prop('disabled', true);//css('display', 'none');
     $("#reloadButton").removeClass("disabled").prop('disabled', false);//css('display', 'inline-block');
-    $.get({url: '/stop'});
 }
 
 function sendData() {
-    $("#sendButton").css('display', 'none');//addClass("disabled").prop('disabled', true);
-    $("#stopButton").removeClass("disabled").prop('disabled', false);//css('display', 'inline-block');
-    $("#pauseButton").css('display', 'inline-block').removeClass("disabled").prop('disabled', false);//css('display', 'inline-block');
     console.log(calcParams());
     $.post({
         url: '/arguments', 
         data: calcParams(),
         dataType: 'json'
     });
+}
+
+function clearOutput() {
+    $.get({
+        url: 'clear'
+    });
+}
+
+function clearCallback() {
+    $("#output").empty();
+}
+
+function startCallback() {
+    $("#sendButton").css('display', 'none');//addClass("disabled").prop('disabled', true);
+    $("#stopButton").removeClass("disabled").prop('disabled', false);//css('display', 'inline-block');
+    $("#pauseButton").css('display', 'inline-block').removeClass("disabled").prop('disabled', false);//css('display', 'inline-block');
 }
 
 function addParam(params, object) {

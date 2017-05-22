@@ -43,6 +43,7 @@ def fill_namespace():
         setattr(namespace, action.name, value)
 
     app.namespaceQueue.put(namespace)
+    app.output.queue.put(("sig", "start"))
     return "OK"
 
 
@@ -56,16 +57,24 @@ def get_arguments():
 def stop():
     os.kill(app.module_process.pid, signal.SIGCONT)
     app.module_process.terminate()
+    app.output.queue.put(("sig", "stop"))
     return "OK"
 
 @app.route("/resume")
 def resume():
     os.kill(app.module_process.pid, signal.SIGCONT)
+    app.output.queue.put(("sig", "resume"))
     return "OK"
 
 @app.route("/pause")
 def pause():
     os.kill(app.module_process.pid, signal.SIGSTOP)
+    app.output.queue.put(("sig", "pause"))
+    return "OK"
+
+@app.route('/clear')
+def clear():
+    app.output.queue.put(("sig", "clear"));
     return "OK"
 
 @app.route("/reload")
@@ -73,11 +82,12 @@ def reload():
     if app.module_process.is_alive():
         return 403, "Process is still running"
     app.restart.set()
+    app.output.queue.put(("sig", "reload"))
     return "OK"
 
 @app.route("/download", methods=['GET'])
 def download():
-    output = "\n".join([line for msg_type, line in app.output.cache])
+    output = "\n".join([line for msg_type, line in app.output.cache if msg_type != 'sig'])
     response = make_response(output)
     response.headers["Content-Disposition"] = \
         "attachment; filename=%s_%s.log" \
@@ -89,16 +99,20 @@ def download():
 def output():
     def generate():
         yield '{"output":['
+        app.output.sem.acquire()
         cache = app.output.cache
+        output = app.output.add_client()
+        app.output.sem.release()
         for msg_type, line in cache:
-            yield json.dumps({'type' : msg_type, 'line': line})
+            yield json.dumps({'type': msg_type, 'line': line})
             yield ','
 
-        output = app.output.get_output()
-        for msg_type, line in output:
+        while not app.restart.is_set():
+            msg_type, line = output.get()
             print("Send ({}): {} (length: {})".format(msg_type, line, len(line)), file=sys.__stdout__)
             yield json.dumps({'type' : msg_type, 'line': line})
             yield ','
+
         yield '\{\}]}'
 
     return Response(generate(), mimetype="application/json")
@@ -107,7 +121,5 @@ def output():
 
 @app.route("/", methods=['GET'])
 def index():
-    if not app.actionQueue.empty():
-        app.mutex_groups, app.actions, app.name, app.desc = app.actionQueue.get()
     return render_template("index.html", mutex_groups=app.mutex_groups, actions=app.actions, name=app.name, description=app.desc)
 

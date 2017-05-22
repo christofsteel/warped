@@ -1,9 +1,11 @@
 import sys
+
 import io
 import argparse
 
-from threading import Thread, Event
+from threading import Thread, Event, Lock
 from multiprocessing import Queue
+import queue
 from os import fdopen, path
 
 from . import argparser_wrapper
@@ -41,19 +43,39 @@ class FlaskThread(Thread):
     def run(self):
         views.app.run(port=self.port, threaded=True, host=self.host)
 
-class Output():
-    def __init__(self, queue, restart):
-        self._queue = queue
-        self._restart = restart
+class OutputThread(Thread):
+    def __init__(self, inqueue, restart):
+        super().__init__()
+        self.queue = inqueue
+        self.restart = restart
         self.cache = []
+        self.clients = []
+        self.sem = Lock()
+        self.stopped = False
 
-    def get_output(self):
-        def gen_output():
-            while not self._restart.is_set():
-                msg_type, line = self._queue.get()
-                self.cache.append((msg_type, line))
-                yield (msg_type, line)
-        return gen_output()
+    def stop(self):
+        self.stopped = True
+
+    def run(self):
+        while not self.restart.is_set() or self.stopped:
+            item = self.queue.get()
+            self.cache.append(item)
+            self.sem.acquire()
+            for i, (outqueue, active) in enumerate(self.clients):
+                try:
+                    outqueue.put(item, True, 1)
+                except queue.Full:
+                    self.clients[i] = self.clients[i][0], False
+            self.sem.release()
+
+            self.clients = [client for client in self.clients if client[1] == True]
+
+    def add_client(self):
+        print("new connection. Current connections: %s" % len(self.clients))
+        new_queue = queue.Queue(10)
+        self.clients.append((new_queue, True))
+        return new_queue
+
 
 def start_module(name, is_module):
     views.app.restart.clear()
@@ -63,7 +85,8 @@ def start_module(name, is_module):
     views.app.queue = Queue()
     ioout = QueuedOut("out", views.app.queue)
     ioerr = QueuedOut("err", views.app.queue)
-    views.app.output = Output(views.app.queue, views.app.restart)
+    views.app.output = OutputThread(views.app.queue, views.app.restart)
+    #Output(views.app.queue, views.app.restart)
 
     views.app.actionQueue = Queue()  # This holds only one Argparser Object
     views.app.namespaceQueue = Queue()  # This hold only one Namespace Object
@@ -79,11 +102,13 @@ def start_module(name, is_module):
         is_module = is_module
     )
     views.app.module_process.start()
+    views.app.output.start()
     views.app.mutex_groups, views.app.actions, name, views.app.desc = views.app.actionQueue.get()
     if name:
         views.app.name = name
 
     views.app.module_process.join()
+    views.app.output.stop()
 
     ioerr.write("Process stopped ({})\n".format(views.app.module_process.exitcode))
     views.app.restart.wait()

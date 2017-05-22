@@ -1,12 +1,27 @@
+.page {
+    height: 100vh;
+}
+
+#main-content {
+    height: 100%;
+    display: block;
+}
+
 #output {
-    position: relative;
+    flex:1;
     background-color: #000000;
     color: #FFFFFF;
     font-weight: bold;
     font-family: "Lucida Console", Monaco, monospace;
     white-space:pre;
-    overflow-y: auto;
-    height: 100vh;
+    overflow-y: scroll;
+    height: 100%;
+}
+
+@media (min-width:40em) {
+    #main-content {
+        display: flex;
+    }
 }
 
 ul {
@@ -25,6 +40,7 @@ li.subparser {
 
 #arguments {
     padding: 0px;
+    overflow: scroll;
 }
 
 .tabs-panel {
