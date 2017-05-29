@@ -120,7 +120,10 @@ function createInputAction(action) {
 function disableAction(action) {
     return function () {
         console.log("disable");
-        thisli = $('#action-' + action['uuid']);
+        var thisli = $('#action-' + action['uuid']);
+        var input = $('#action-' + action['uuid'] + ' input');
+        thisli.attr('old_val', input.val())
+        $('#action-' + action['uuid'] + ' input').val(action["default"]);
         thisli.prop('disabled', true).addClass('disabled');
         delbutton = $('#action-' + action['uuid' + "button"]);
         delbutton.prop('disabled', true).addClass('disabled');
@@ -134,7 +137,13 @@ function disableAction(action) {
 function enableAction(action) {
     return function() {
         console.log("enable");
-        thisli = $('#action-' + action['uuid']);
+        var thisli = $('#action-' + action['uuid']);
+        var oldval = thisli.attr('old_val');
+        if (oldval !== undefined) {
+            var input = $('#action-' + action['uuid'] + ' input');
+            thisli.oldval = input.val()
+            $('#action-' + action['uuid'] + ' input').val(oldval);
+        }
         thisli.prop('disabled', false).removeClass('disabled');
         delbutton = $('#action-' + action['uuid' + "button"]);
         delbutton.prop('disabled', false).removeClass('disabled');
@@ -181,6 +190,7 @@ function createAction(action) {
         if(action.optional === true) {
             li.prop('disabled', true).addClass('disabled');
             input.prop('disabled', true).addClass('disabled');
+            input.val(action["default"]);
             input.find('input').prop('disabled', true).addClass('disabled');
             input.find('.addbutton').prop('disabled', true).addClass('disabled');
             input.find('.rembutton').prop('disabled', true).addClass('disabled');

@@ -43,6 +43,7 @@ class Action():
         internal_dict['dest'] = self.dest
         internal_dict['desc'] = self.desc
         internal_dict['checked'] = self.on_none if self.on_none is True or self.on_none is False else None
+        internal_dict['default'] = self.on_none if type(self.on_none) == str else None
         internal_dict['optional'] = self.optional
         internal_dict['is_const'] = self.const is not None
         internal_dict['type'] = self.type_function.__name__

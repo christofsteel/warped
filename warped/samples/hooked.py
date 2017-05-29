@@ -21,7 +21,7 @@ def main():
     group3 = group2.add_mutually_exclusive_group()
     group3.add_argument('--three')
     group3.add_argument('--four')
-    bla.add_argument('--test', '-t', help="Blubb")
+    bla.add_argument('--test', '-t', help="Blubb", default="Blabla")
     bla.add_argument('--bla', action="store_true", default=True)
     bla.add_argument('--blubb', action="store_true")
     bla.add_argument('-f', action="append")
