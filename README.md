@@ -1,6 +1,6 @@
-# WARP - a Webbased frontend for ARgparser in Python
+# WARPED - a Webbased frontend for ARgparser in Python
 
-`warp` can be used to execute single Python file and Python modules. It captures
+`warped` can be used to execute single Python file and Python modules. It captures
 calls to the `argparse` module of Python and renders a web GUI based on the
 options and arguments defined. It also displays the output of the program inside
 the web GUI and allows you to stop, pause and resume the program, as well as
@@ -11,14 +11,14 @@ downloading the output.
 Either get a stable version from PyPI, or install the current version from git
 
     # Installation from PyPI
-    pip install warp
+    pip install warped
 
     # Installation from git
-    pip install git+https://git.k-fortytwo.de/christofsteel/warp/
+    pip install git+https://git.k-fortytwo.de/christofsteel/warped/
 
 ## Usage
 
-    warp [-h] [--port PORT] [--host HOST] [--module] file
+    warped [-h] [--port PORT] [--host HOST] [--module] file
 
     a Webbased frontend for ARgparse in Python
 
@@ -33,25 +33,25 @@ Either get a stable version from PyPI, or install the current version from git
 
 ## Sample
 
-To test the capabilities of `warp` an example module was included. You can run
+To test the capabilities of `warped` an example module was included. You can run
 it like this:
 
-    warp -m warp.samples.hooked
+    warped -m warped.samples.hooked
 
-Since `warp` also makes use of the argparse module, `warp` itself can be //warped//.
+Since `warped` also makes use of the argparse module, `warped` itself can be //warped//.
 
-    warp -m warp.hook
+    warped -m warped.hook
 
 ## How does it work?
 
-When `warp` is executed, it starts a flask webserver. The javascript of the 
+When `warped` is executed, it starts a flask webserver. The javascript of the 
 website reads the `/arguments` resource of the server, where the configuration
 of the argparser returned. In a seperate process the given program is executed
 using the `runpy` library, redirecting `sys.stdin` and `sys.stdout` to a 
 `multiprocessing.Queue`, which can be read by the warp process to display it
 via the web GUI.
 
-Additionally, `warp` adds an entry for `argparse` in the `sys.modules` list. Python
+Additionally, `warped` adds an entry for `argparse` in the `sys.modules` list. Python
 looks first looks at this list, everytime a module is imported, to avoid 
 importing a module multiple times. This custom `argparse` module behaves similar
 to the original `argparse` module. In fact with the exception of the 
