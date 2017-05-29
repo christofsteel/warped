@@ -5,6 +5,7 @@ setup(
     version='0.1.0',
     packages=find_packages(),
     url='https://git.k-fortytwo.de/christofsteel/warp',
+    download_url = 'https://git.k-fortytwo.de/christofsteel/warped/archive/0.1.0.tar.gz',
     license='MIT',
     author='Christoph Stahl',
     author_email='christoph.stahl@uni-dortmund.de',
