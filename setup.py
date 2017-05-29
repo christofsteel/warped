@@ -1,11 +1,13 @@
 from setuptools import setup, find_packages
 
+version = "0.1.1"
+
 setup(
     name='warped',
-    version='0.1.1',
+    version=version,
     packages=find_packages(),
     url='https://git.k-fortytwo.de/christofsteel/warp',
-    download_url = 'https://git.k-fortytwo.de/christofsteel/warped/archive/0.1.0.tar.gz',
+    download_url = 'https://git.k-fortytwo.de/christofsteel/warped/archive/%s.tar.gz' % version,
     license='MIT',
     author='Christoph Stahl',
     author_email='christoph.stahl@uni-dortmund.de',
