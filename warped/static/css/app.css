@@ -15,7 +15,7 @@
     font-weight: bold;
     font-family: "Lucida Console", Monaco, monospace;
     white-space:pre;
-    overflow-y: scroll;
+    overflow-y: auto;
     height: 100%;
 }
 
@@ -62,7 +62,7 @@ li.subparser {
 
 #arguments {
     padding: 0px;
-    overflow: scroll;
+    overflow-y: auto;
 }
 
 .tabs-panel {

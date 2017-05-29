@@ -73,8 +73,6 @@ def argParserGenerator(actionQueue, namespaceQueue):
 
             actions, mutex_groups = self.get_actions()
 
-            print(actions, file=sys.__stdout__)
-
             self.actionQueue.put((mutex_groups, actions, name, desc))
             namespace = self.namespaceQueue.get()
             return namespace

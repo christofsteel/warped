@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='warp',
-    version='0.0.1',
+    name='warped',
+    version='0.1.0',
     packages=find_packages(),
     url='https://git.k-fortytwo.de/christofsteel/warp',
     license='MIT',
@@ -11,7 +11,7 @@ setup(
     description='A webbased wrapper for the argument parser in Python',
     entry_points={
         'console_scripts': [
-            "warp = warp.hook:main"
+            "warped = warped.hook:main"
         ]
     },
     include_package_data = True,

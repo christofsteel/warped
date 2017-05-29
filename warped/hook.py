@@ -99,7 +99,8 @@ def start_module(name, is_module):
         ioout,
         ioerr,
         overwritten_modules={'argparse': argparser},
-        is_module = is_module
+        is_module = is_module,
+        #original_modules = emptymodules
     )
     views.app.module_process.start()
     views.app.output.start()
