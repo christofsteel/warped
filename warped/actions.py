@@ -98,6 +98,8 @@ class StoreAction(Action):
 
 class StoreConstAction(Action):
     def store_type_function(self, x):
+        if x == 'false':
+            x = None
         return self.const if x is not None else self.on_none
 
     def __init__(self, action, **kwargs):

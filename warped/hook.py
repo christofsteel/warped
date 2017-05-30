@@ -1,3 +1,4 @@
+from . import savemodules
 import sys
 
 import io
@@ -24,8 +25,14 @@ class QueuedOut(io.StringIO):
         lines = b.split('\n')
         for line in lines[:-1]:
             super().write(line)
-            self.flush()
+            self.explflush()
         super().write(lines[-1])
+
+    def explflush(self):
+        value = self.getvalue()
+        self.queue.put((self.name, value))
+        self.seek(0)
+        self.truncate(0)
 
     def flush(self):
         value = self.getvalue()
@@ -100,7 +107,7 @@ def start_module(name, is_module):
         ioerr,
         overwritten_modules={'argparse': argparser},
         is_module = is_module,
-        #original_modules = emptymodules
+        original_modules = savemodules.savedmodules
     )
     views.app.module_process.start()
     views.app.output.start()
