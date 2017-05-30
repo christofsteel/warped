@@ -12,21 +12,35 @@ from flask import Flask, render_template, request, Response, \
 app = Flask(__name__)
 app.mutex_groups=[]
 
-def parse_argument(name, json, action):
+def parse_argument(name, json, action, namespace):
+    print(name)
     try:
         argument = json[name]
         if type(argument) == list:
             if len(argument) == 1:
-                return action.type_function(argument[0])
+                setattr(namespace, action.name, action.type_function(argument[0]))
             else:
-                return [action.type_function(elem) for elem in argument]
+                setattr(namespace, action.name, [action.type_function(elem) for elem in argument])
         else:
-            return action.type_function(argument)
+            setattr(namespace, action.name, action.type_function(argument))
     except (KeyError, ValueError):
         if name.endswith("[]"):
-            return action.on_none
+            setattr(namespace, action.name, action.on_none)
         else:
-            return parse_argument(name + "[]", json, action)
+            parse_argument(name + "[]", json, action, namespace)
+
+    try:
+        for name, choice in action.choices.items():
+            print(choice)
+            actions = choice.actions
+            for group in choice.groups:
+                action.extend(group.actions)
+            for action in actions:
+                parse_argument(action.name, json, action, namespace)
+    except AttributeError:
+        pass
+
+
 
 
 @app.route("/arguments", methods=['POST'])
@@ -34,13 +48,13 @@ def fill_namespace():
     json = dict(request.form)
     namespace = argparse.Namespace()
     all_actions = app.actions
+    print(all_actions)
 
     for group in app.mutex_groups:
         all_actions.extend(group.actions)
 
     for action in all_actions:
-        value = parse_argument(action.name, json, action)
-        setattr(namespace, action.name, value)
+        parse_argument(action.name, json, action, namespace)
 
     app.namespaceQueue.put(namespace)
     app.output.queue.put(("sig", "start"))
@@ -57,7 +71,6 @@ def get_arguments():
 def stop():
     os.kill(app.module_process.pid, signal.SIGCONT)
     app.module_process.terminate()
-    app.output.queue.put(("sig", "stop"))
     return "OK"
 
 @app.route("/resume")

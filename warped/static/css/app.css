@@ -7,6 +7,15 @@
     display: block;
 }
 
+.checkbox {
+    height:100%;
+}
+
+input[type=checkbox] {
+    width: 2em;
+    height: 2em;
+    -moz-appearance: none;
+}
 
 #output {
     flex:1;

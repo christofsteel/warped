@@ -21,6 +21,9 @@ function createSubparserAction(action) {
 
         var content_div = $("<div/>", { id: choice['uuid'] })
             .addClass("tabs-panel").appendTo(tab_content);
+        choice['groups'].forEach(function(group) {
+           content_div.append(createGroup(group));
+        });
         choice['actions'].forEach(function(action) {
             content_div.append(createAction(action));
         });
@@ -31,13 +34,14 @@ function createSubparserAction(action) {
 }
 
 function createCheckboxAction(action) {
-    var switch_div = $("<div/>").addClass("switch");
+    //var switch_div = $("<div/>").addClass("switch");
+    var switch_div = $("<div/>").addClass("checkbox");
     var input = $("<input/>", {
         id: action["uuid"],
         type: 'checkbox',
         name: action['uuid']
-    }).addClass('switch-input').data("name", action['dest']).appendTo(switch_div);
-    var paddle = $("<label/>", {for: action["uuid"]}).addClass("switch-paddle")
+    }).data("name", action['dest']).appendTo(switch_div);
+    var paddle = $("<label/>", {for: action["uuid"]}).addClass("css-label")
         .appendTo(switch_div);
     if(action['checked'] === true) {
         input.attr('checked', true);

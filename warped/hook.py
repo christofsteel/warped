@@ -112,6 +112,7 @@ def start_module(name, is_module):
     views.app.output.stop()
 
     ioerr.write("Process stopped ({})\n".format(views.app.module_process.exitcode))
+    views.app.output.queue.put(("sig", "stop"))
     views.app.restart.wait()
 
 

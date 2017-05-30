@@ -90,7 +90,7 @@ class ActionContainer():
         internal_dict = {}
         internal_dict['uuid'] = str(self.uuid)
         internal_dict['actions'] = [action.as_dict() for action in self.actions]
-        internal_dict['groups'] = [[action.as_dict() for action in group] for group in self.groups]
+        internal_dict['groups'] = [group.as_dict() for group in self.groups]
         return internal_dict
 
 class StoreAction(Action):
@@ -110,4 +110,4 @@ class MutuallyExclusiveGroup(ActionContainer):
         super().__init__()
 
     def __repr__(self):
-        return "Group Object: ( Actions: {}, Groups: {} )".format(self.actions, self.mutex_groups)
+        return "Group Object: ( Actions: {}, Groups: {} )".format(self.actions, self.groups)
