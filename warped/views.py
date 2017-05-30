@@ -13,7 +13,6 @@ app = Flask(__name__)
 app.mutex_groups=[]
 
 def parse_argument(name, json, action, namespace):
-    print(name)
     try:
         argument = json[name]
         if type(argument) == list:
@@ -31,12 +30,11 @@ def parse_argument(name, json, action, namespace):
 
     try:
         for name, choice in action.choices.items():
-            print(choice)
             actions = choice.actions
             for group in choice.groups:
-                action.extend(group.actions)
-            for action in actions:
-                parse_argument(action.name, json, action, namespace)
+                actions.extend(group.actions)
+            for act in actions:
+                parse_argument(act.name, json, act, namespace)
     except AttributeError:
         pass
 
@@ -48,7 +46,6 @@ def fill_namespace():
     json = dict(request.form)
     namespace = argparse.Namespace()
     all_actions = app.actions
-    print(all_actions)
 
     for group in app.mutex_groups:
         all_actions.extend(group.actions)
